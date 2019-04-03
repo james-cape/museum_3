@@ -1,12 +1,14 @@
 class Patron
 
   attr_reader :name,
-              :spending_money,
+              # :spending_money,
               :interests
 
-  def initialize(name, cost)
+  attr_accessor :spending_money
+
+  def initialize(name, spending_money)
     @name = name
-    @spending_money = 20
+    @spending_money = spending_money
     @interests = []
   end
 

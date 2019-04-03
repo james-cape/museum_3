@@ -2,12 +2,16 @@ class Museum
 
   attr_reader :name,
               :exhibits,
-              :patrons
+              :patrons,
+              :revenue,
+              :patrons_of_exhibits
 
   def initialize(name)
     @name = name
     @exhibits = []
     @patrons = []
+    @revenue = 0
+    @patrons_of_exhibits = {}
   end
 
   def add_exhibit(exhibit)
@@ -15,14 +19,30 @@ class Museum
   end
 
   def recommend_exhibits(patron)
-    @exhibits.map do |exhibit|
+    recommended = @exhibits.map do |exhibit|
       exhibit if patron.interests.include?(exhibit.name)
     end.compact
+
+    recommended.sort_by do |exhib|
+      exhib.cost
+    end.reverse
+
   end
 
   def admit(patron)
     @patrons << patron
+    patron_list = []
+    recommend_exhibits(patron).each do |exhibit|
+      if exhibit.cost <= patron.spending_money
+        patron.spending_money -= exhibit.cost
+        @revenue += exhibit.cost
+        patron_list << patron
+        patrons_of_exhibits[exhibit] = patron_list
+      end
+    end
   end
+
+
 
   def patrons_by_exhibit_interest
     patrons_by_interest = {}
@@ -31,8 +51,4 @@ class Museum
     end
     patrons_by_interest
   end
-
-
-# For `patrons_by_exhibit_interest`, this method takes no arguments and returns a Hash where each key is an Exhibit. The value associated with that Exhibit is an Array of all the Patrons that have an interest in that exhibit.
-
 end
